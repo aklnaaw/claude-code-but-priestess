@@ -1885,15 +1885,6 @@ app.whenReady().then(() => {
   tray.setContextMenu(buildContextMenu());
   tray.on("click", () => togglePopover());
 
-  // On compositors without a visible system tray (Niri, GNOME Wayland
-  // without AppIndicator extension, etc.), the tray icon is registered as
-  // a StatusNotifierItem but may not be visible. Set PRTS_SHOW_ON_START=1
-  // to show the popover immediately at launch so the app is usable.
-  if (process.env.PRTS_SHOW_ON_START === "1") {
-    positionPopover();
-    showPopover();
-  }
-
   // Background self-turns: proactive screen checks (opt-in) and occasional
   // memory tidy-ups. All gating — interval, cooldown, quiet hours, daily cap,
   // backend availability — lives in proactive.js.
@@ -1975,8 +1966,16 @@ app.whenReady().then(() => {
       popover.webContents.send("chat:queue", { length: event.length });
     }
   });
-
+  
   createPopover();
+  // On compositors without a visible system tray (Niri, GNOME Wayland
+  // without AppIndicator extension, etc.), the tray icon is registered as
+  // a StatusNotifierItem but may not be visible. Set PRTS_SHOW_ON_START=1
+  // to show the popover immediately at launch so the app is usable.
+  if (process.env.PRTS_SHOW_ON_START === "1") {
+    positionPopover();
+    showPopover();
+  }
   scheduleDesktopPet();
 });
 
